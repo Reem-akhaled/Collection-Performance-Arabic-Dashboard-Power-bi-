@@ -1,42 +1,44 @@
-# Collection Performance Arabic Dashboard — Power BI
+# Collection Performance Arabic Dashboard - Power BI
 
-An end-to-end Arabic business intelligence solution for monitoring electricity collection performance, receipt issuance, remaining balances, collection ratios, daily targets, operational trends, and performance rankings across company, sector, and administration levels.
+An Arabic right-to-left business intelligence solution for monitoring electricity collection performance and receipt issuance across company, sector, and administration levels.
 
-This project was developed in response to a real operational need encountered in my current professional role. The objective was to replace fragmented manual and paper-based reporting with a centralized analytical experience that presents the same information in a clearer, faster, and more decision-oriented format.
+The project was developed in response to an operational need encountered in my current professional role. It replaces fragmented manual and paper-based reporting with a centralized analytical experience that provides faster access to performance results, consistent calculations, and clearer decision support.
 
-The public portfolio version uses anonymized terminology and fully synthetic data. No production data, internal server details, credentials, customer information, or proprietary implementation code are included.
+> **Portfolio note:** The public version uses anonymized terminology and fully synthetic data. It does not include production data, company-identifying information, credentials, internal server details, the Power BI source file, SQL procedures, or DAX measures.
 
 ---
 
-## Project Overview
+## Project at a Glance
 
-The solution brings together data from multiple operational sources, transforms it through a SQL Server data warehouse, and presents it in Power BI through an Arabic right-to-left interface.
+The solution combines data from multiple operational databases, processes it through a SQL Server data warehouse, and presents it in Power BI through an Arabic right-to-left interface.
 
 It supports:
 
 - company-level performance monitoring
-- sector-level comparison and ranking
-- administration-level drill-down
-- daily, monthly, and financial-year trend analysis
-- daily target monitoring
-- identification of highest and lowest performers
-- current-period, previous-period, and year-over-year comparisons
-- contextual Arabic narrative analysis for non-technical users
+- sector comparison and ranking
+- administration-level operational analysis
+- daily, monthly, and financial-year trends
+- daily target monitoring and gap analysis
+- best- and weakest-month identification
+- previous-period and year-over-year comparisons
+- contribution and ranking analysis
+- contextual Arabic analysis for users who prefer guided interpretation
+- custom tooltips that provide additional detail without overcrowding the main pages
 
 ---
 
 ## Business Problem
 
-The original process depended on manual follow-up, paper-based reporting, and repeated preparation of operational summaries. This created several challenges:
+The original reporting process relied on manual follow-up, paper-based summaries, and repeated calculations. This created several challenges:
 
 - delayed visibility into collection performance
-- repeated manual calculations
-- difficulty comparing sectors and administrations consistently
-- limited access to daily trends and financial-year analysis
-- dependence on specialist users to interpret tables and charts
-- fragmented reporting across multiple organizational levels
+- repeated preparation of the same operational reports
+- inconsistent comparison between sectors and administrations
+- limited access to daily and financial-year trends
+- dependence on specialist users to interpret charts and tables
+- fragmented reporting across organizational levels
 
-The dashboard addresses these challenges by centralizing the data, standardizing the calculations, and presenting the results in an interactive and readable format.
+The dashboard centralizes the information, standardizes the calculations, and presents the results in an interactive format that supports operational follow-up and management discussions.
 
 ---
 
@@ -44,44 +46,48 @@ The dashboard addresses these challenges by centralizing the data, standardizing
 
 The project follows a layered business intelligence architecture:
 
-1. **Source Data Collection**  
-   Operational data is collected from external databases through SQL stored procedures.
+1. **Source data collection**  
+   Operational records are collected from external databases through SQL stored procedures.
 
-2. **Staging Layer**  
-   Extracted records are stored in a staging table before warehouse processing.
+2. **Staging layer**  
+   Extracted records are stored locally before warehouse processing.
 
-3. **Warehouse Processing**  
-   A dedicated loading procedure calculates issuance, collection, remaining balances, collection ratios, active snapshots, latest monthly records, and collection-cycle information.
+3. **Incremental warehouse loading**  
+   A control table stores process checkpoints so only new or changed records are processed.
 
-4. **Semantic Model**  
-   Power BI uses a dimensional model with separate date, collection-month, sector, administration, and cycle tables.
+4. **Fact and dimension processing**  
+   The warehouse procedure calculates issuance, monthly collection, remaining balances, collection ratios, bill counts, latest monthly snapshots, active daily snapshots, and collection-cycle information.
 
-5. **Reporting Layer**  
-   DAX measures drive KPIs, comparisons, rankings, targets, trend analysis, and Arabic narrative outputs.
+5. **Power BI semantic model**  
+   Separate date, collection-month, sector, administration, and cycle dimensions support daily and financial-year analysis.
+
+6. **Reporting and analysis layer**  
+   DAX measures drive KPIs, comparisons, rankings, targets, trend analysis, dynamic titles, tooltips, and Arabic analytical narratives.
 
 ---
 
 ## Data Model
 
-The model is centered around a single fact table and supporting dimensions.
+![Power BI data model](screenshots/30-data-model.jpg)
 
-### Fact table
+The model is centered on `FactCollection` and uses supporting dimensions for dates, collection months, sectors, administrations, and administration collection cycles.
 
-`FactCollection`
+### Main fact data
 
-Main analytical fields include:
+`FactCollection` includes:
 
-- issuance
-- monthly collection
-- remaining amount
-- collection ratio
 - balance before issuance
-- paid and unpaid bill values
+- issuance
+- total amount
+- monthly collection
+- remaining balance
+- collection ratio
+- paid and unpaid values
 - paid and unpaid bill counts
 - latest monthly snapshot flag
 - active daily snapshot flag
 
-### Dimensions
+### Supporting tables
 
 - `DimDate`
 - `DimCollectionMonth`
@@ -89,26 +95,35 @@ Main analytical fields include:
 - `DimEngineering`
 - `DimEngineeringCollectionCycle`
 - `SectorEngineerHierarchy`
-
-### Control table
-
 - `SyncControl`
 
-The financial year starts in July, allowing the report to analyse the periods:
-
-- 2024/2025
-- 2025/2026
-- 2026/2027
+The financial year begins in July and supports the periods 2024/2025, 2025/2026, and 2026/2027 in the synthetic portfolio dataset.
 
 ---
 
-## Core Report Experiences
+## Report Navigation
 
-The landing page provides direct access to five core areas of the solution.
+![Landing page](screenshots/01-cover.jpg)
 
-### 1. Company Performance
+The landing page provides direct access to five connected report experiences:
 
-The company view provides an executive summary of overall performance, including:
+1. Company Performance
+2. Sector Performance
+3. Administration Performance
+4. Time-Trend Analysis
+5. Detailed Collection Data
+
+The company, sector, and administration experiences also provide access to contextual analysis pages that expand the selected view with comparisons, written interpretation, target analysis, contribution analysis, and performance summaries.
+
+---
+
+## 1. Company Performance
+
+![Company performance](screenshots/02-company-overview.jpg)
+
+The company page provides an executive view of the selected reporting date.
+
+### Main information
 
 - total issuance
 - monthly collection
@@ -117,92 +132,134 @@ The company view provides an executive summary of overall performance, including
 - daily target
 - actual daily collection
 - daily surplus or deficit
-- highest and lowest performing sectors
-- highest and lowest performing administrations
-- daily and monthly trend switching
-- KPI switching between issuance, collection, remaining balance, collection ratio, and daily target
-- sector contribution analysis
-- in-page controls for metric, time perspective, and month-performance selection
+- highest and lowest sectors
+- highest and lowest administrations
 
-![Company Performance](screenshots/company-overview.png)
+### Interactive controls
+
+- daily or monthly trend
+- all months, best months, or weakest months
+- metric selection
+- date and financial-year context
+- access to company analysis pages
+
+### Metric-driven visual behavior
+
+The metric selector changes both the calculation and the visual form:
+
+- **Issuance**, **monthly collection**, and **remaining balance** show each sector's share of the company total in a donut chart.
+- **Collection ratio** changes the left visual to a column-based gap analysis showing the difference between the collection ratio target and the actual collection ratio for each sector.
+- **Daily target** changes the left visual to a column-based gap analysis showing the difference between actual daily collection and the calculated target for each sector.
+
+### Tooltip behavior
+
+- The main trend chart uses the daily or monthly comparison tooltip.
+- The contribution donut uses the sector relative performance tooltip.
+- The month-performance area uses the month-performance tooltip.
 
 ---
 
-### 2. Sector Performance
+## 2. Sector Performance
 
-The sector view enables focused analysis of a selected sector and its administrations.
+![Sector performance](screenshots/03-sector-overview.jpg)
 
-It includes:
+The sector page evaluates one selected sector and the administrations within it.
 
-- sector-level issuance, collection, remaining balance, and collection ratio
+### Main information
+
+- sector issuance, collection, remaining balance, and collection ratio
 - sector ranking across the company
-- highest and lowest performing administration within the sector
-- daily target and daily actual collection
-- administration-level target comparison
+- highest and lowest administration in the sector
+- sector daily target and actual collection
+- administration target values and daily gaps
 - administration ranking within the selected sector
-- daily and monthly trend switching
-- KPI switching between issuance, collection, remaining balance, collection ratio, and daily target
-- in-page controls for sector selection, time perspective, and month-performance selection
 
-![Sector Performance](screenshots/sector-overview.png)
+### Interactive controls
+
+- sector selection
+- daily or monthly trend
+- all months, best months, or weakest months
+- metric selection
+- access to sector analysis pages
+
+### Metric-driven visual behavior
+
+- **Issuance**, **monthly collection**, and **remaining balance** show administration contribution within the selected sector.
+- **Collection ratio** changes the left visual to a column-based gap analysis showing the difference between the collection ratio target and the actual collection ratio for each administration in the sector.
+- **Daily target** compares each administration's actual daily collection with its calculated target and displays the surplus or deficit.
+
+### Tooltip behavior
+
+- The trend chart uses the daily or monthly comparison tooltip.
+- The contribution donut uses the administration relative performance tooltip.
+- The month-performance area uses the month-performance tooltip.
 
 ---
 
-### 3. Administration Performance
+## 3. Administration Performance
 
-The administration view provides the most detailed operational analysis in the report.
+![Administration performance](screenshots/04-administration-overview.jpg)
 
-It includes:
+The administration page provides the most detailed operational view in the report.
+
+### Main information
+
+- administration and parent-sector context
+- issuance, monthly collection, remaining balance, and collection ratio
+- paid and unpaid bill counts and values
+- daily target, actual daily collection, and daily gap
+- ranking within the sector and across the company
+- contribution to sector and company totals
+- monthly history and period comparisons
+
+### Interactive controls
 
 - administration selection
-- parent-sector context
-- issuance, collection, remaining balance, and collection ratio
-- paid and unpaid bill counts and values
-- daily target, actual collection, and daily gap
-- ranking within the sector and across the company
-- contribution to sector totals
-- contribution to company totals
-- monthly trend analysis
-- best, weakest, or all-month views
-- previous-month and peer-period comparison
-- current-period versus prior-period values
-- sector-level versus company-level positioning
-- in-page controls for trend type, month-performance view, comparison reference, and organizational benchmark
+- daily or monthly trend
+- all months, best months, or weakest months
+- sector or company benchmark
+- previous month or peer-period comparison
+- current and reference-period values
+- access to administration analysis pages
 
-![Administration Performance](screenshots/administration-overview.png)
+### Tooltip behavior
+
+- The trend chart uses daily or monthly comparison tooltips.
+- The month-performance area uses the month-performance tooltip.
 
 ---
 
-### 4. Time Trend Analysis
+## 4. Time-Trend Analysis
 
-The trend analysis area provides three distinct time perspectives:
+### Daily trend
 
-- daily trend
-- monthly trend
-- financial-year trend
+![Daily trend](screenshots/05-daily-trends.jpg)
 
-Users can analyse issuance and collection behaviour across the full organization or within a selected sector or administration.
+### Monthly trend
+
+![Monthly trend](screenshots/06-monthly-trends.jpg)
+
+### Financial-year trend
+
+![Financial-year trend](screenshots/07-yearly-trends.jpg)
 
 The trend experience supports:
 
-- financial-year filtering
-- month filtering
-- daily date analysis
-- sector and administration filtering
+- daily, monthly, and financial-year perspectives
+- financial-year and month filtering
+- company, sector, or administration scope
 - comparison across multiple financial years
-- organizational scope selection and reset controls
+- reset to the full organizational scope
 
-![Daily Trend](screenshots/daily-trend.png)
-
-![Monthly Trend](screenshots/monthly-trend.png)
-
-![Financial Year Trend](screenshots/yearly-trend.png)
+The three trend perspectives use dedicated daily, monthly, and financial-year tooltips so the reference values and comparison logic match the active time level.
 
 ---
 
-### 5. Detailed Collection Data
+## 5. Detailed Collection Data
 
-The detailed-data view provides a structured operational table grouped by sector and administration.
+![Detailed collection data](screenshots/08-detailed-data.jpg)
+
+The detailed-data page provides an operational table grouped by sector and administration.
 
 It includes:
 
@@ -212,22 +269,19 @@ It includes:
 - monthly collection
 - collection ratio
 - remaining balance
+- sector totals and administration-level details
 
-This page supports detailed review and reconciliation while remaining connected to the same organizational filters used throughout the report.
-
-![Detailed Data](screenshots/detailed-data.png)
+The page supports detailed review and reconciliation while remaining connected to the same date and organizational filters used throughout the report.
 
 ---
 
-## Contextual Insight Pages
+## Contextual Analysis Experiences
 
-Each performance view is supported by a dedicated set of contextual insight pages. They are accessed from the related company, sector, or administration page and extend the current analysis with written interpretation, comparison, and decision support.
+The company, sector, and administration pages are supported by contextual analysis experiences. They preserve the selected date and organizational context while extending the main report with comparison tables, written interpretation, target results, ranking, contribution, and month-performance analysis.
 
-They are especially useful for users who prefer a guided explanation rather than interpreting charts and tables independently.
+These pages are particularly useful for users who prefer a guided explanation rather than interpreting charts and tables independently.
 
-### Company insights
-
-The company view is supported by analysis pages covering:
+### Company analysis
 
 - operational performance comparison
 - daily target achievement across sectors
@@ -235,9 +289,13 @@ The company view is supported by analysis pages covering:
 - sector performance summary
 - sector contribution analysis
 
-### Sector insights
+![Company operational comparison](screenshots/09-company-insight-overview.jpg)
+![Company daily target analysis](screenshots/10-company-daily-target-insight.jpg)
+![Company month performance](screenshots/11-company-month-performance-insight.jpg)
+![Company sector performance](screenshots/12-company-sector-performance-insight.jpg)
+![Company sector contribution](screenshots/13-company-sector-contribution-insight.jpg)
 
-The sector view is supported by analysis pages covering:
+### Sector analysis
 
 - sector operational comparison
 - administration achievement against daily targets
@@ -245,144 +303,140 @@ The sector view is supported by analysis pages covering:
 - administration performance summary
 - administration contribution within the selected sector
 
-### Administration insights
+![Sector operational comparison](screenshots/14-sector-comparison-insight.jpg)
+![Sector daily target analysis](screenshots/15-sector-daily-target-insight.jpg)
+![Sector month performance](screenshots/16-sector-month-performance-insight.jpg)
+![Sector administration performance](screenshots/17-sector-administration-performance-insight.jpg)
+![Sector administration contribution](screenshots/18-sector-administration-contribution-insight.jpg)
 
-The administration view is supported by analysis pages covering:
+### Administration analysis
 
-- current performance compared with the previous month and peer period
+- current performance compared with previous and peer periods
 - contribution to sector and company totals
-- daily target performance
-- monthly performance ranking
+- daily target context and monthly performance
+
+![Administration comparison](screenshots/19-administration-comparison-insight.jpg)
+![Administration contribution](screenshots/20-administration-contribution-insight.jpg)
+![Administration month performance](screenshots/21-administration-month-performance-insight.jpg)
 
 ---
 
 ## Narrative Analysis Framework
 
-The report includes a narrative interpretation layer that adapts to the context of the current page and selection. Rather than repeating a fixed set of measures, it converts the active analysis into a structured written explanation.
+The report includes an Arabic interpretation layer that adapts to the current page and active selection. It does not repeat a fixed set of KPIs; the content changes according to the analytical context.
 
-Depending on the page and selected view, the narrative may summarize current operational results, compare performance across periods, explain the distribution of results between sectors or administrations, highlight best and weakest months, describe target achievement, or evaluate contribution and ranking.
+Depending on the page, it can explain:
 
-The narrative experience is organized into three complementary purposes:
+- current operational results
+- previous-period and year-over-year comparisons
+- target achievement
+- distribution of performance between sectors or administrations
+- best and weakest months
+- contribution and ranking
+- concentration, balance, improvement, decline, or mixed performance
 
-- **Performance reading** — translates the currently displayed table, KPIs, or comparison into clear business language.
-- **Interpretation** — explains what the observed pattern means, such as improvement, decline, consistency, concentration, imbalance, or mixed performance.
-- **Priorities** — highlights the areas that require attention and provides concise recommendations derived from the active results.
+The narrative follows three complementary purposes:
 
-This approach helps users who are less comfortable interpreting charts and tables understand the current situation without leaving the analytical context of the page.
+- **Performance reading** - translates the displayed KPIs, table, or comparison into clear business language.
+- **Interpretation** - explains the meaning of the observed pattern.
+- **Priorities** - highlights areas requiring attention and provides concise recommendations based on the active results.
+
+The supporting values remain visible beside the narrative so users can verify the written analysis against the underlying figures.
+
+---
+
+## Contextual Tooltips
+
+The report uses custom report-page tooltips to provide additional analytical context without overcrowding the main layouts.
+
+Depending on the visual, tooltips may show:
+
+- current values
+- previous-month values
+- peer-period or previous-year values
+- absolute and percentage changes
+- sector or administration context
+- ranking and contribution details
+- daily, monthly, or financial-year comparison logic
+
+![Daily comparison tooltip](screenshots/22-tooltip-daily-comparison.jpg)
+
+![Monthly comparison tooltip](screenshots/23-tooltip-monthly-comparison.jpg)
+
+![Sector performance tooltip](screenshots/24-tooltip-sector-performance.jpg)
+
+![Administration performance tooltip](screenshots/25-tooltip-administration-performance.jpg)
+
+![Ranking tooltip](screenshots/26-tooltip-ranking.jpg)
+
+![Daily metric tooltip](screenshots/27-tooltip-daily-metric.jpg)
+
+![Monthly metric tooltip](screenshots/28-tooltip-monthly-metric.jpg)
+
+![Financial-year metric tooltip](screenshots/29-tooltip-yearly-metric.jpg)
 
 ---
 
 ## Key Analytical Capabilities
 
-### Daily Target Analysis
+### Daily target analysis
 
-The dashboard compares actual daily collection with the calculated daily target at company, sector, and administration levels.
+The report compares actual daily collection with the calculated daily target at company, sector, and administration levels. It identifies entities that achieved the target, entities below target, and the resulting surplus or deficit.
 
-It identifies:
+### Best and weakest months
 
-- entities that achieved the target
-- entities that remained below target
-- daily surplus or deficit
-- counts and names of successful and underperforming sectors or administrations
+Users can review all months or isolate the strongest and weakest months to identify recurring patterns and seasonal performance differences.
 
-### Best and Weakest Months
+### Ranking and contribution
 
-Users can switch between:
+The report calculates sector and administration rankings, contribution to issuance and collection, remaining-balance share, and the gap against the target collection ratio.
 
-- all available months
-- strongest months
-- weakest months
+### Comparative analysis
 
-This helps identify seasonal patterns and recurring performance issues.
-
-### Ranking and Contribution
-
-The report calculates:
-
-- sector ranking across the company
-- administration ranking within the sector
-- administration ranking across the company
-- issuance contribution
-- collection contribution
-- remaining-balance contribution
-- gap against the target collection ratio
-
-### Comparative Analysis
-
-The dashboard supports comparison with:
-
-- previous month
-- same period in the previous year
-- peer month
-- financial-year performance
-
-### Interactive View Switching
-
-The report uses in-page controls to let users change the analytical perspective without moving to another page. These controls are applied across the company, sector, administration, and trend experiences according to the purpose of each page.
-
-Examples include:
-
-- switching between daily and monthly views
-- showing all months, best-performing months, or weakest-performing months
-- comparing performance at sector or company level
-- changing the reference period between previous month and peer period
-- filtering by financial year, month, sector, or administration
-- resetting the current selection to the full organizational scope
-
-Metric selectors also change both the measure and the visual treatment. In the company view:
-
-- **Issuance**, **monthly collection**, and **remaining balance** are presented as contribution shares, using a donut chart to show how each sector contributes to the company total.
-- **Collection ratio** is presented as a comparative ranking across sectors, making it easier to identify the strongest and weakest performers.
-- **Daily target** is presented as a column-based gap analysis, showing the difference between actual daily collection and the calculated target for each sector.
-
-The sector page follows the same principle at administration level: the selected metric changes the visual so that users see either contribution, ranking, or target-gap performance in the form best suited to that measure.
+Current results can be compared with the previous month, the corresponding period in the previous year, a peer month, or financial-year performance.
 
 ---
 
 ## Business Impact
 
-The solution was designed to improve operational visibility and reduce dependence on manual reporting.
+The solution was designed to improve operational visibility and reduce dependence on manually prepared reports.
 
 Expected benefits include:
 
 - faster access to daily performance
 - consistent calculations across organizational levels
-- reduced manual preparation of reports
+- reduced manual report preparation
 - clearer identification of underperforming sectors and administrations
 - easier comparison across months and financial years
-- improved accessibility for non-technical users through Arabic narrative analysis
+- improved accessibility through Arabic analysis and contextual tooltips
 - better support for follow-up and management discussions
 
 ---
 
-## Technologies Used
+## Technologies and Skills
 
 - Microsoft Power BI
 - DAX
 - Power Query
 - Microsoft SQL Server
-- T-SQL
-- Stored procedures
-- Dimensional data modeling
-- ETL and warehouse loading
-- GitHub for portfolio documentation
+- T-SQL and stored procedures
+- incremental warehouse loading
+- dimensional data modeling
+- Arabic right-to-left report design
+- GitHub portfolio documentation
 
 ---
 
 ## Design Approach
 
-The report was designed for Arabic right-to-left usage with a consistent visual identity.
+The report uses a consistent Arabic right-to-left visual system with:
 
-Key design characteristics include:
-
-- Arabic labels and narratives
-- right-to-left composition
+- Arabic labels and analytical narratives
 - dark teal and off-white color palette
-- consistent navigation across pages
-- dynamic titles
-- conditional KPI indicators
-- clear hierarchy between company, sector, and administration levels
-- focused use of color for positive and negative performance
+- consistent navigation and page hierarchy
+- dynamic titles and selected-context labels
+- conditional performance indicators
+- focused use of color for positive and negative results
 
 Primary colors:
 
@@ -391,18 +445,17 @@ Primary colors:
 
 ---
 
-## Portfolio Scope and Confidentiality
+## Repository Scope and Confidentiality
 
 This repository presents the project as a professional case study.
 
-The following are intentionally excluded from the public repository:
+The following are not publicly distributed:
 
 - Power BI source file
 - SQL scripts and stored procedures
 - DAX measures
-- source data
-- credentials
-- internal server details
+- source and production data
+- credentials and internal server details
 - production database names
 - company-identifying information
 
@@ -423,23 +476,11 @@ LICENSE
 
 ## Detailed Case Study
 
-A full project case study is available here:
+A complete project case study is available here:
 
 [Download the detailed project case study](docs/Collection-Performance-Case-Study.pdf)
 
-The case study covers:
-
-- business context
-- source-data collection
-- warehouse design
-- data model
-- loading workflow
-- report navigation
-- page-by-page explanation
-- switching options
-- narrative analysis
-- performance logic
-- business impact
+The case study covers the business context, data acquisition, warehouse workflow, semantic model, report navigation, page-level interactions, tooltip mapping, contextual analysis, and business impact.
 
 ---
 
