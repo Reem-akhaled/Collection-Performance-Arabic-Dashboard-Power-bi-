@@ -478,7 +478,7 @@ LICENSE
 
 A complete project case study is available here:
 
-[Download the detailed project case study](docs/Collection-Performance-Case-Study.pdf)
+[Download the detailed project case study](docs/Collection-Performance-arabic-dashboard.pdf)
 
 The case study covers the business context, data acquisition, warehouse workflow, semantic model, report navigation, page-level interactions, tooltip mapping, contextual analysis, and business impact.
 
